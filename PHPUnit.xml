@@ -21,7 +21,7 @@
 </condition>
 <property name="php.workingDir" value="${php.workingDir.dir}" />
 
-<condition property="phpunit.runtime.set">
+<condition property="phpunit.runtime.set" >
   <matches pattern=".+" string="${phpunit.runtime}"/>
 </condition>
 <condition property="phpunit.runtime.exec" value="${teamcity.build.tempDir}/phpunit.phar">
@@ -34,8 +34,6 @@
 <condition property="phpunit.configuration.param" value="-c &quot;${phpunit.configuration}&quot;" else="--no-configuration">
    <matches pattern=".+" string="${phpunit.configuration}"/>
 </condition>
-
-<echo>${phpunit.configuration.param}</echo>
 
 <property name="phpunit.junit.log" value="${teamcity.build.tempDir}/phpunit-log.xml"/>
 
@@ -60,7 +58,7 @@
 
 <target name="runPhpUnitPhar" depends="getPhpUnit" unless="phpunit.runtime.set">
   <exec executable="php" dir="${php.workingDir}" failonerror="false" resultproperty="phpunit.result">
-    <arg line="-f &quot;${phpunit.runtime.exec}&quot; -d display_errors=On -- ${phpunit.configuration.param} --log-junit ${phpunit.junit.log} ${phpunit.coverage.param} ${phpunit.params}"/>
+    <arg line="-f &quot;${phpunit.runtime.exec}&quot; -d display_errors=On -- ${phpunit.configuration.param} --log-junit ${phpunit.junit.log} ${phpunit.coverage.param} ${phpunit.params} ${php.workingDir}"/>
   </exec>
 
   <echo>##teamcity[importData type='junit' path='${phpunit.junit.log}']</echo>
@@ -73,7 +71,7 @@
 
 <target name="runPhpUnitRuntime" depends="getPhpUnit" if="phpunit.runtime.set">
   <exec executable="${phpunit.runtime}" dir="${php.workingDir}" failonerror="false" resultproperty="phpunit.result">
-    <arg line="${phpunit.configuration.param} --log-junit ${phpunit.junit.log} ${phpunit.coverage.param} ${phpunit.params}"/>
+    <arg line="${phpunit.configuration.param} --log-junit ${phpunit.junit.log} ${phpunit.coverage.param} ${phpunit.params} ${php.workingDir}"/>
   </exec>
 
   <echo>##teamcity[importData type='junit' path='${phpunit.junit.log}']</echo>
@@ -85,7 +83,7 @@
 </target>
 
 <target name="getPhpUnit" unless="phpunit.runtime.set">
-  <get src="https://phar.phpunit.de/phpunit.phar" dest="${teamcity.build.tempDir}" verbose="on" skipexisting="false"/>
+  <get src="https://phar.phpunit.de/phpunit.phar" dest="${teamcity.build.tempDir}" verbose="on" skipexisting="false" usetimestamp="true"/>
 </target>
 
 </project>]]></param>
